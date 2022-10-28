@@ -7,30 +7,50 @@ components: {
 let imageSRC = "https://picsum.photos/100/100?random=";
 let i;
 let tileArray = [];
-  let randomArray = [];
+let randomArray = [];
 let compareValues = [];
+let startTime;
+let moves = 0;
+let highScore
+let GameLevel
 function generateRandomColor() {
   let letters = "0123456789ABCDEF";
   let color = "#";
-  // Math.floor(Math.random()*0xffffff).toString(16)
   for (let i = 0; i < 6; i++) {
     color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
 }
-
+let checkGameState = () => {
+  let opacity = 0;
+  compareValues = [];
+  document.querySelectorAll(".gameImage").forEach((tile) => {
+    opacity = eval(opacity + parseInt(tile.style.opacity));
+  });
+  if (opacity == GameLevel * 2) {
+    navOffCanvas.innerHTML=`level score ${Math.floor(((Date.now()-startTime)/100)/moves)}`
+    field.innerHTML = "";
+    tileArray = [];
+    randomArray = [];
+    compareValues = [];
+    moves = 0;
+    GameLevel++;
+    difficultyLevel.value=GameLevel
+    gameButton.innerHTML=`next level`
+  }
+};
 let evaluating = () => {
   if (compareValues[0].value == compareValues[1].value) {
-    alert('correct')
-    compareValues = [];
+    alert("correct");
+    checkGameState();
   } else {
-    alert('incorrect')
+    alert("incorrect");
     compareValues.forEach((tile) => {
       document.querySelector("#" + tile.id).style = `
       opacity: 0;
       `;
     });
-    compareValues = [];
+    checkGameState();
   }
 };
 let styleTiles = () => {
@@ -39,7 +59,11 @@ let styleTiles = () => {
     background-color: ${generateRandomColor()};
     width:100px;
     aspect-ratio: 1;
-    
+-webkit-user-drag: none;
+-khtml-user-drag: none;
+-moz-user-drag: none;
+-o-user-drag: none;
+user-drag: none;
     `;
   });
   document.querySelectorAll(".gameImage").forEach((tile) => {
@@ -49,33 +73,32 @@ let styleTiles = () => {
     `;
   });
 };
-let index =()=>{
-  let index=Math.floor(tileArray.length * Math.random());
-randomArray.push(tileArray.splice(index,1)[0])
-} 
+let index = () => {
+  let index = Math.floor(tileArray.length * Math.random());
+  randomArray.push(tileArray.splice(index, 1)[0]);
+};
 
 let startNewgame = () => {
-  field.innerHTML = null;
-  let GameLevel = difficultyLevel.value;
- 
+  startTime = Date.now();
+  field.innerHTML = "";
+  GameLevel = parseInt(difficultyLevel.value);
   for (i = 0; i < GameLevel; i++) {
-    tileArray.push({ 'src': imageSRC + i, 'id': "gameTilez1z" + i });
-    tileArray.push({ 'src': imageSRC + i, 'id': "gameTilez2z" + i });
+    tileArray.push({ src: imageSRC + i, id: "gameTilez1z" + i });
+    tileArray.push({ src: imageSRC + i, id: "gameTilez2z" + i });
   }
-  for(i=0;i<(GameLevel*2);i++){
-index()
+  for (i = 0; i < GameLevel * 2; i++) {
+    index();
   }
-  console.log(randomArray)
-  for (i=0;i<randomArray.length;i++){
+  for (i = 0; i < randomArray.length; i++) {
     field.innerHTML += `
   <div class="gameTile">
-  <img src="${randomArray[i].src}" class="gameImage" id="${randomArray[i].id}">
+  <img src="${randomArray[i].src}" class="gameImage" id="${randomArray[i].id}" >
   </div>
   `;
-  styleTiles();
+    styleTiles();
     document.querySelectorAll(".gameImage").forEach((tile) => {
       tile.addEventListener("click", (e) => {
-        console.log("clicked");
+        moves++;
         document.querySelector("#" + e.target.id).style = `
   opacity: 1;
   `;
@@ -93,6 +116,7 @@ index()
 };
 
 onMounted(() => {
+  GameLevel = parseInt(difficultyLevel.value);
 });
 </script>
 <template>
@@ -106,15 +130,15 @@ onMounted(() => {
   >
     Memory tester
   </button>
-  <div class="position-absolute top-50 start-50">
-    <input type="number" id="difficultyLevel" value="10" min="5" max="15" />
-    <button class="btn" @click="startNewgame()">new game</button>
+  <div  id="gameBar">
+    <input type="number" id="difficultyLevel" value="1" />
+    <button class="btn" @click="startNewgame()" id="gameButton">new game</button>
   </div>
 
   <nav-bar></nav-bar>
   <div
     id="field"
-    class="d-flex flex-wrap justify-content-evenly align-items-center"
+    class="d-flex flex-wrap justify-content-evenly align-items-center overflow-scroll"
   ></div>
 </template>
 
@@ -124,6 +148,10 @@ onMounted(() => {
   padding: 0;
   box-sizing: border-box;
 }
+::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   width: 100vw;
   height: 100vh;
@@ -133,6 +161,13 @@ body {
   top: 0;
   left: 0;
   margin: 1%;
+}
+#gameBar{
+  position: fixed;
+  top: 0;
+  left: 50%;
+  margin: 1%;
+transform: translate(-50%);
 }
 #field {
   position: fixed;
