@@ -59,17 +59,21 @@ let styleTiles = () => {
     background-color: ${generateRandomColor()};
     width:100px;
     aspect-ratio: 1;
--webkit-user-drag: none;
--khtml-user-drag: none;
--moz-user-drag: none;
--o-user-drag: none;
-user-drag: none;
+    
     `;
   });
   document.querySelectorAll(".gameImage").forEach((tile) => {
     tile.style = `
     opacity: 0;
     margin: 1%;
+    
+	user-drag: none;
+	-moz-user-select: none;
+-webkit-user-drag: none;
+-khtml-user-drag: none;
+-moz-user-drag: none;
+-o-user-drag: none;
+user-drag: none;
     `;
   });
 };
