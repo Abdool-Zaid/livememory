@@ -51,8 +51,7 @@ let styleTiles = () => {
 };
 let index =()=>{
   let index=Math.floor(tileArray.length * Math.random());
-  tileArray.splice(index,1)[0]
-return  index
+randomArray.push(tileArray.splice(index,1)[0])
 } 
 
 let startNewgame = () => {
@@ -64,7 +63,7 @@ let startNewgame = () => {
     tileArray.push({ 'src': imageSRC + i, 'id': "gameTilez2z" + i });
   }
   for(i=0;i<(GameLevel*2);i++){
-    randomArray.push(tileArray[index()]);
+index()
   }
   console.log(randomArray)
   for (i=0;i<randomArray.length;i++){
@@ -94,9 +93,6 @@ let startNewgame = () => {
 };
 
 onMounted(() => {
-  //   <img src="https://picsum.photos/200/300?random=1">
-  // <img src="https://picsum.photos/200/300?random=2">
-  // field.innerHTML='
 });
 </script>
 <template>
